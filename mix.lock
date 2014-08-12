@@ -1,5 +1,5 @@
-%{"cowboy": {:git, "git://github.com/extend/cowboy.git", "db52494371ea249f38d51108c7d79cf487ff6374", [tag: "0.9.0"]},
-  "cowlib": {:git, "git://github.com/extend/cowlib.git", "63298e8e160031a70efff86a1acde7e7db1fcda6", [ref: "0.4.0"]},
+%{"cowboy": {:git, "git://github.com/extend/cowboy.git", "2928456ae817f820918a3fd5ac963e7368a94fe5", []},
+  "cowlib": {:git, "git://github.com/ninenines/cowlib.git", "d544a494af4dbc810fc9c15eaf5cc050cced1501", [ref: "1.0.0"]},
   "jsx": {:git, "git://github.com/talentdeficit/jsx.git", "507fa4c41db33c81e925ab53f4d789d234aaff2f", [ref: "master"]},
-  "ranch": {:git, "git://github.com/extend/ranch.git", "5df1f222f94e08abdcab7084f5e13027143cc222", [ref: "0.9.0"]},
+  "ranch": {:git, "git://github.com/ninenines/ranch.git", "adf1822defc2b7cfdc7aca112adabfa1d614043c", [ref: "1.0.0"]},
   "simple_oauth2": {:git, "git://github.com/virtan/simple_oauth2.git", "71fd58fe2038f9491adbcd26c84ba0ba4e18f2c8", []}}
