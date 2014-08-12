@@ -6,7 +6,7 @@ defmodule BigQuery do
   def network do
     client_id     = System.get_env("GOOGLE_API_CLIENT_ID")
     client_secret = System.get_env("GOOGLE_API_CLIENT_SECRET")
-    callback_uri  = "http://localhost"
+    callback_uri  = "http://localhost:#{BigQuery.TokenListener.port}"
     scope = "https://www.googleapis.com/auth/bigquery"
 
     :simple_oauth2.customize_networks(:simple_oauth2.predefined_networks(),
@@ -26,12 +26,27 @@ defmodule BigQuery do
   end
 
   def authenticate(url) do
-    case System.cmd("open", url) do
-      {:ok, _exit_status} ->
+    BigQuery.TokenListener.start
+    case open_by_browser(url) do
+      :ok ->
         IO.puts ""
-      {:error, _reason} ->
+      :error ->
         IO.puts "Open the browser and visit the following link to authenticate."
         IO.puts url
+    end
+    # BigQuery.TokenListener.stop
+  end
+
+  defp open_by_browser(url) do
+    try do
+      {_output, exit_status} = System.cmd("open", [url])
+      if exit_status == 0 do
+        :ok
+      else
+        :error
+      end
+    rescue
+      _ -> :error
     end
   end
 end

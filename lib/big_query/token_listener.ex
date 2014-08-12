@@ -1,6 +1,6 @@
 defmodule BigQuery.TokenListener do
   @moduledoc """
-  Provides listener for cowboy
+  Provides webserver listener for retrieving access token.
   """
 
   def start do
@@ -14,7 +14,7 @@ defmodule BigQuery.TokenListener do
 
     :cowboy.start_http(
       listner_name, 100,
-      [{:port, listener_port}], [{:env, [{:dispatch, dispatch}]}]
+      [{:port, port}], [{:env, [{:dispatch, dispatch}]}]
     )
   end
 
@@ -22,7 +22,7 @@ defmodule BigQuery.TokenListener do
     :cowboy.stop_listener(listner_name)
   end
 
-  defp listener_port do
+  def port do
     System.get_env("BIGQUERY_TOKEN_LISTNER_PORT") || 50800
   end
 
