@@ -4,11 +4,21 @@ defmodule BigQuery.API.Base do
   def request(url) do
     headers = [{"Authorization", "OAuth #{get_token}"}]
     body = HTTPoison.get(url, headers).body
-    JSEX.decode!(body)
+    case JSEX.decode!(body) do
+      %{"error" => error} ->
+        raise %BigQuery.Error{message: "Error occurred in the API call: #{inspect error}"}
+      json -> json
+    end
   end
 
   def get_token do
     BigQuery.TokenStorage.load
+  end
+
+  def projects do
+    url = url_for("projects")
+    json = request(url)
+    json["projects"]
   end
 
   def datasets(project) do
@@ -17,10 +27,9 @@ defmodule BigQuery.API.Base do
     json["datasets"]
   end
 
-  def projects do
-    url = url_for("projects")
+  def jobs(project) do
+    url = url_for("projects/#{project}/jobs")
     json = request(url)
-    json["projects"]
   end
 
   def url_for(path) do

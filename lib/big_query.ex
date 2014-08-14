@@ -1,6 +1,7 @@
 defmodule BigQuery do
   defdelegate projects, to: BigQuery.API.Base
   defdelegate datasets(project), to: BigQuery.API.Base
+  defdelegate jobs(project), to: BigQuery.API.Base
 
   def run do
     dispatch("google/login")
