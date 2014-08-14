@@ -12,7 +12,7 @@ defmodule BigQuery.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [ applications: [:logger, :ssl, :inets] ]
+    [ applications: [:logger, :ssl, :inets, :httpoison] ]
   end
 
   # Dependencies can be hex.pm packages:
@@ -27,6 +27,9 @@ defmodule BigQuery.Mixfile do
   defp deps do
     [
       {:simple_oauth2, github: "virtan/simple_oauth2"},
+      {:httpoison, github: "edgurgel/httpoison"},
+      {:jsex, github: "talentdeficit/jsex"},
+      {:jsx, github: "talentdeficit/jsx", override: true},
       {:cowboy, "1.0.0", github: "extend/cowboy"}
     ]
   end

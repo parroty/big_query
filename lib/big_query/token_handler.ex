@@ -11,13 +11,13 @@ defmodule BigQuery.TokenHandler do
   end
 
   def handle(req, state) do
-    {token, req} = :cowboy_req.qs_val("code", req)
+    {code, req} = :cowboy_req.qs_val("code", req)
 
-    message = case token do
+    message = case code do
       "" ->
         @failure_message
       _  ->
-        BigQuery.TokenStorage.save(token)
+        BigQuery.request_token(code)
         @success_message
     end
 

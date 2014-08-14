@@ -1,5 +1,9 @@
 %{"cowboy": {:git, "git://github.com/extend/cowboy.git", "2928456ae817f820918a3fd5ac963e7368a94fe5", []},
   "cowlib": {:git, "git://github.com/ninenines/cowlib.git", "d544a494af4dbc810fc9c15eaf5cc050cced1501", [ref: "1.0.0"]},
-  "jsx": {:git, "git://github.com/talentdeficit/jsx.git", "507fa4c41db33c81e925ab53f4d789d234aaff2f", [ref: "master"]},
+  "hackney": {:git, "git://github.com/benoitc/hackney.git", "fd2158b39b0aa139bb90f0c867f246ddfec072e6", [tag: "0.13.0"]},
+  "httpoison": {:git, "git://github.com/edgurgel/httpoison.git", "1fbda2674b0d6a1312df7f69b9f52bf7df5269c7", []},
+  "idna": {:git, "git://github.com/benoitc/erlang-idna.git", "21aa158b7f36bf2a000f12fe40d7f21eece9cf65", [tag: "hackney-0.11.2"]},
+  "jsex": {:git, "git://github.com/talentdeficit/jsex.git", "661ce8565aaea22aa3576d4ad5e9d11065fe60f9", []},
+  "jsx": {:git, "git://github.com/talentdeficit/jsx.git", "507fa4c41db33c81e925ab53f4d789d234aaff2f", []},
   "ranch": {:git, "git://github.com/ninenines/ranch.git", "adf1822defc2b7cfdc7aca112adabfa1d614043c", [ref: "1.0.0"]},
   "simple_oauth2": {:git, "git://github.com/virtan/simple_oauth2.git", "71fd58fe2038f9491adbcd26c84ba0ba4e18f2c8", []}}

@@ -1,18 +1,30 @@
 defmodule BigQuery do
+  defdelegate projects, to: BigQuery.API.Base
+  defdelegate datasets(project), to: BigQuery.API.Base
+
   def run do
     dispatch("google/login")
   end
 
-  def network do
-    client_id     = System.get_env("GOOGLE_API_CLIENT_ID")
-    client_secret = System.get_env("GOOGLE_API_CLIENT_SECRET")
-    callback_uri  = "http://localhost:#{BigQuery.TokenListener.port}"
-    scope = "https://www.googleapis.com/auth/bigquery"
+  def request_token(code) do
+    dispatch("google/callback?code=#{code}")
+  end
 
-    :simple_oauth2.customize_networks(:simple_oauth2.predefined_networks(),
-      [{"google", [{:client_id, client_id}, {:client_secret, client_secret}, {:callback_uri, callback_uri}, {:scope, scope}]}]
+  def network do
+    networks = :simple_oauth2.predefined_networks
+    callback_uri = "http://localhost:#{BigQuery.TokenListener.port}"
+    scope = ["https://www.googleapis.com/auth/userinfo.email",
+             "https://www.googleapis.com/auth/userinfo.profile",
+             "https://www.googleapis.com/auth/bigquery"]
+
+    :simple_oauth2.customize_networks(networks,
+      [{"google", [{:client_id, client_id}, {:client_secret, client_secret},
+                   {:callback_uri, callback_uri}, {:scope, Enum.join(scope, " ")}]}]
     )
   end
+
+  defp client_id, do: System.get_env("GOOGLE_API_CLIENT_ID")
+  defp client_secret, do: System.get_env("GOOGLE_API_CLIENT_SECRET")
 
   def dispatch(request) do
     case :simple_oauth2.dispatcher(request, "", network) do
@@ -20,6 +32,10 @@ defmodule BigQuery do
         :simple_oauth2.gather_url_get(where) |> authenticate
       {:send_html, html} ->
         IO.inspect {:send_html, html}
+      {:ok, auth_data} ->
+        access_token = auth_data[:access_token]
+        BigQuery.TokenStorage.save(access_token)
+        :ok
       {:error, class, reason} ->
         IO.inspect {:error, class, reason}
     end
