@@ -25,7 +25,7 @@ defmodule OAuth2ClientTest do
     assert %OAuth2Client.Token{} == token
   end
 
-  test "save token" do
+  test "save token to file" do
     token = %OAuth2Client.Token{
       access_token: "sample_access_token",
       expires_in: 3600,
@@ -40,7 +40,7 @@ defmodule OAuth2ClientTest do
     assert File.exists?(file_name) == true
   end
 
-  test "read token" do
+  test "load token from file" do
     file_name = "test/fixture/load_token.json"
     token = OAuth2Client.Token.load_from_file(file_name)
 
@@ -49,22 +49,4 @@ defmodule OAuth2ClientTest do
     assert token.refresh_token == "sample_refresh_token"
     assert token.token_type ==  "Bearer"
   end
-
-
-  # test "accessing with token" do
-  #   token = OAuth2Client.token_from_file("json_file")
-  # end
-
-  # test "authentication with token string" do
-  #   token = OAuthClient.load_token("sample_token")
-  #   assert token.value != "sample_token"
-  # end
-
-  # test "calling api using token" do
-  #   token = OAuthClient.load_token("sample_token")
-
-  #   response = OAuthClient.get(token, "http://localhost:3000")
-  #   assert response.body != nil
-  # end
-
 end

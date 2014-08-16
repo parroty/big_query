@@ -52,30 +52,12 @@ defmodule OAuth2Client.Requester do
   def options(token, url, headers \\ [], options \\ []),     do: request(token, :options, url, "", headers, options)
 
   defp request(token, method, url, body, headers, options) do
-    HTTPoison.reqest(method, url, body, headers ++ [{"Authorization", token}], options)
+    oauth_header = [{"Authorization", "OAuth #{token}"}]
+    HTTPoison.request(method, url, body, headers ++ oauth_header, options)
   end
 end
 
 defmodule OAuth2Client do
-  def test1 do
-    OAuth2Client.create(
-      id: System.get_env("GOOGLE_API_CLIENT_ID"),
-      secret: System.get_env("GOOGLE_API_CLIENT_SECRET"),
-      authorize_url: OAuth2Client.Site.Google.authorize_url,
-      token_url: OAuth2Client.Site.Google.token_url,
-      scope: OAuth2Client.Site.Google.scope,
-      callback_url: "http://localhost:3000/oauth2callback"
-    )
-  end
-
-  def test2 do
-    OAuth2Client.fetch_authorize_url(test1)
-  end
-
-  def test3(code) do
-    OAuth2Client.fetch_token(test1, code)
-  end
-
   # TODO: raise error if required parameters are missing
   def create(params) do
     %OAuth2Client.Client{
