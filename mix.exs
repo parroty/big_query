@@ -26,11 +26,9 @@ defmodule BigQuery.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:simple_oauth2, github: "virtan/simple_oauth2"},
       {:httpoison, github: "edgurgel/httpoison"},
       {:jsex, github: "talentdeficit/jsex"},
-      {:jsx, github: "talentdeficit/jsx", override: true},
-      {:cowboy, "1.0.0", github: "extend/cowboy"}
+      {:oauth2ex, path: "../oauth2ex"}
     ]
   end
 end
