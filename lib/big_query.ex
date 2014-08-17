@@ -9,11 +9,11 @@ defmodule BigQuery do
     use OAuth2Ex.Adapter
 
     def config do
-      scopes = ["https://www.googleapis.com/auth/userinfo.email",
-               "https://www.googleapis.com/auth/userinfo.profile",
-               "https://www.googleapis.com/auth/bigquery"]
+      scopes = [ "https://www.googleapis.com/auth/userinfo.email",
+                 "https://www.googleapis.com/auth/userinfo.profile",
+                 "https://www.googleapis.com/auth/bigquery" ]
 
-      OAuth2Ex.create(
+      OAuth2Ex.config(
         id:            System.get_env("GOOGLE_API_CLIENT_ID"),
         secret:        System.get_env("GOOGLE_API_CLIENT_SECRET"),
         authorize_url: OAuth2Ex.Site.Google.authorize_url,
@@ -29,6 +29,7 @@ defmodule BigQuery do
   end
 
   def configure do
-    OAuth2Ex.Token.Manager.configure(OAuth2ExAdapter, port: 4000)
+    {:ok, msg} = OAuth2Ex.Token.Manager.configure(OAuth2ExAdapter, port: 4000)
+    IO.puts msg
   end
 end
