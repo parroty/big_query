@@ -6,6 +6,31 @@ defmodule BigQuery do
   defdelegate query(project, query),          to: BigQuery.API.Base
   defdelegate query(project, query, options), to: BigQuery.API.Base
 
+  defmodule OAuth2ExAdapter do
+    def client do
+      scopes = ["https://www.googleapis.com/auth/userinfo.email",
+               "https://www.googleapis.com/auth/userinfo.profile",
+               "https://www.googleapis.com/auth/bigquery"]
+
+      OAuth2Ex.create(
+        id:            System.get_env("GOOGLE_API_CLIENT_ID"),
+        secret:        System.get_env("GOOGLE_API_CLIENT_SECRET"),
+        authorize_url: OAuth2Ex.Site.Google.authorize_url,
+        token_url:     OAuth2Ex.Site.Google.token_url,
+        scope:         Enum.join(scopes, " "),
+        callback_url:  "http://localhost:4000"
+      )
+    end
+
+    def token_file_path do
+      System.user_home <> "/oauth2ex.google.token"
+    end
+  end
+
+  def configure do
+    OAuth2Ex.Token.Manager.configure(OAuth2ExAdapter, port: 4000)
+  end
+
   def run do
     dispatch("google/login")
   end
