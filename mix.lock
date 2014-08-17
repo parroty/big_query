@@ -1,5 +1,9 @@
-%{"hackney": {:package, "0.13.1"},
+%{"cowboy": {:package, "1.0.0"},
+  "cowlib": {:package, "1.0.0"},
+  "hackney": {:package, "0.13.1"},
   "httpoison": {:git, "git://github.com/edgurgel/httpoison.git", "35c7ad9dcf294316ad9e4b3400603e2aac956a82", []},
   "idna": {:package, "1.0.1"},
   "jsex": {:git, "git://github.com/talentdeficit/jsex.git", "661ce8565aaea22aa3576d4ad5e9d11065fe60f9", []},
-  "jsx": {:package, "2.0.4"}}
+  "jsx": {:package, "2.0.4"},
+  "plug": {:package, "0.5.3"},
+  "ranch": {:package, "1.0.0"}}

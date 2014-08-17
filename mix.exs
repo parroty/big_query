@@ -28,7 +28,9 @@ defmodule BigQuery.Mixfile do
     [
       {:httpoison, github: "edgurgel/httpoison"},
       {:jsex, github: "talentdeficit/jsex"},
-      {:oauth2ex, path: "../oauth2ex"}
+      {:oauth2ex, path: "../oauth2ex"},
+      {:cowboy, "~> 1.0.0"},
+      {:plug, "~> 0.5.3"}
     ]
   end
 end
