@@ -21,7 +21,8 @@ defmodule BigQuery do
         token_url:     "https://accounts.google.com/o/oauth2/token",
         scope:         "https://www.googleapis.com/auth/bigquery",
         callback_url:  "http://localhost:4000",
-        token_store:   %OAuth2Ex.FileStorage{file_name: System.user_home <> "/oauth2ex.google.token"}
+        token_store:   %OAuth2Ex.FileStorage{
+                         file_name: System.user_home <> "/oauth2ex.google.token"}
       )
     end
   end
