@@ -12,7 +12,7 @@ defmodule BigQuery.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [ applications: [:logger, :ssl, :inets, :httpoison] ]
+    [ applications: [:logger, :oauth2ex] ]
   end
 
   # Dependencies can be hex.pm packages:
@@ -26,11 +26,8 @@ defmodule BigQuery.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:httpoison, github: "edgurgel/httpoison"},
-      {:jsex, github: "talentdeficit/jsex"},
-      {:oauth2ex, path: "../oauth2ex"},
-      {:cowboy, "~> 1.0.0"},
-      {:plug, "~> 0.5.3"}
+      # {:oauth2ex, github: "parroty/oauth2ex"}
+      {:oauth2ex, path: "../oauth2ex"}
     ]
   end
 end

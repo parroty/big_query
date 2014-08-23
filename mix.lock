@@ -1,9 +1,10 @@
 %{"cowboy": {:package, "1.0.0"},
   "cowlib": {:package, "1.0.0"},
   "hackney": {:package, "0.13.1"},
-  "httpoison": {:git, "git://github.com/edgurgel/httpoison.git", "35c7ad9dcf294316ad9e4b3400603e2aac956a82", []},
+  "httpoison": {:git, "git://github.com/edgurgel/httpoison.git", "b482fed56071c2989127990241911ebe9d0a646a", []},
   "idna": {:package, "1.0.1"},
-  "jsex": {:git, "git://github.com/talentdeficit/jsex.git", "661ce8565aaea22aa3576d4ad5e9d11065fe60f9", []},
+  "jsex": {:package, "2.0.0"},
   "jsx": {:package, "2.0.4"},
-  "plug": {:package, "0.5.3"},
-  "ranch": {:package, "1.0.0"}}
+  "plug": {:package, "0.6.0"},
+  "ranch": {:package, "1.0.0"},
+  "timex": {:package, "0.12.4"}}
