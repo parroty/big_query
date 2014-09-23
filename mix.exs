@@ -4,7 +4,7 @@ defmodule BigQuery.Mixfile do
   def project do
     [app: :big_query,
      version: "0.0.1",
-     elixir: "~> 0.15.0",
+     elixir: "~> 1.0.0",
      deps: deps]
   end
 
@@ -26,8 +26,8 @@ defmodule BigQuery.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      # {:oauth2ex, github: "parroty/oauth2ex"}
-      {:oauth2ex, path: "../oauth2ex"}
+      {:oauth2ex, "0.0.3"},
+      {:extwitter, "~> 0.1"}
     ]
   end
 end
