@@ -30,51 +30,61 @@ defmodule BigQuery do
     )
   end
 
+  def url_for(path) do
+    "https://www.googleapis.com/bigquery/v2/#{path}"
+  end
+
   @doc """
   List the projects by calling Google BigQuery API - project list.
   API: https://developers.google.com/bigquery/docs/reference/v2/#Projects
   """
   def projects do
-    # response = http_get("https://www.googleapis.com/bigquery/v2/projects")
-    response = OAuth2Ex.HTTP.get(token, "https://www.googleapis.com/bigquery/v2/projects")
-    response.body |> JSEX.decode!
+    url_for("projects") |> get |> decode!
   end
 
   def datasets do
-    response = OAuth2Ex.HTTP.get(token, "https://www.googleapis.com/bigquery/v2/projects/#{project_id}/datasets")
-    response.body |> JSEX.decode!
+    url_for("projects/#{project_id}/datasets") |> get |> decode!
   end
 
   def dataset(dataset_id) do
-    response = OAuth2Ex.HTTP.get(token, "https://www.googleapis.com/bigquery/v2/projects/#{project_id}/datasets/#{dataset_id}")
-    response.body |> JSEX.decode!
+    url_for("projects/#{project_id}/datasets/#{dataset_id}") |> get |> decode!
   end
 
   def tables(dataset_id) do
-    response = OAuth2Ex.HTTP.get(token, "https://www.googleapis.com/bigquery/v2/projects/#{project_id}/datasets/#{dataset_id}/tables")
-    response.body |> JSEX.decode!
+    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> get |> decode!
   end
 
   def jobs(stateFilter \\ "running") do
-    parsed_params = parse_query_params([{"stateFilter", stateFilter}])
-    response = OAuth2Ex.HTTP.get(token, "https://www.googleapis.com/bigquery/v2/projects/#{project_id}/jobs?#{parsed_params}")
-    response.body |> JSEX.decode!
+    params = [stateFilter: stateFilter]
+    url_for("projects/#{project_id}/jobs") |> get(params) |> decode!
   end
 
   def query do
-    headers = [{"Content-Type", "application/json"}]
-    body = %{
+    params = %{
       "kind": "bigquery#queryRequest",
       "query": "SELECT kind, name, population FROM [sample_dataset.sample_table] LIMIT 1000",
       "defaultDataset": %{
         "datasetId": "sample_dataset",
         "projectId": "ktsquall"
       }
-    } |> JSEX.encode!
+    }
 
-    response = OAuth2Ex.HTTP.post(token, "https://www.googleapis.com/bigquery/v2/projects/#{project_id}/queries", body, headers)
-    body = response.body |> JSEX.decode!
+    body = url_for("projects/#{project_id}/queries") |> post(params) |> decode!
     parse_query_result(body["rows"])
+  end
+
+  defp decode!(response) do
+    cond do
+      response.status_code < 200 or response.status_code > 200 ->
+        raise "Error response was returned from server. status_code: #{response.status_code}, body: #{response.body}"
+
+      response.headers["Content-Type"] =~ ~r/application\/json/i ->
+        response.body |> JSEX.decode!
+
+      true ->
+        response.body
+
+    end
   end
 
   def parse_query_params(params) do
