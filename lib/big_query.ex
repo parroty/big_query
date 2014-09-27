@@ -39,24 +39,24 @@ defmodule BigQuery do
   API: https://developers.google.com/bigquery/docs/reference/v2/#Projects
   """
   def projects do
-    url_for("projects") |> get |> decode!
+    url_for("projects") |> get |> fetch_body
   end
 
   def datasets do
-    url_for("projects/#{project_id}/datasets") |> get |> decode!
+    url_for("projects/#{project_id}/datasets") |> get |> fetch_body
   end
 
   def dataset(dataset_id) do
-    url_for("projects/#{project_id}/datasets/#{dataset_id}") |> get |> decode!
+    url_for("projects/#{project_id}/datasets/#{dataset_id}") |> get |> fetch_body
   end
 
   def tables(dataset_id) do
-    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> get |> decode!
+    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> get |> fetch_body
   end
 
   def jobs(stateFilter \\ "running") do
     params = [stateFilter: stateFilter]
-    url_for("projects/#{project_id}/jobs") |> get(params) |> decode!
+    url_for("projects/#{project_id}/jobs") |> get(params) |> fetch_body
   end
 
   def query do
@@ -69,21 +69,15 @@ defmodule BigQuery do
       }
     }
 
-    body = url_for("projects/#{project_id}/queries") |> post(params) |> decode!
+    body = url_for("projects/#{project_id}/queries") |> post(params) |> fetch_body
     parse_query_result(body["rows"])
   end
 
-  defp decode!(response) do
-    cond do
-      response.status_code < 200 or response.status_code > 200 ->
-        raise "Error response was returned from server. status_code: #{response.status_code}, body: #{response.body}"
-
-      response.headers["Content-Type"] =~ ~r/application\/json/i ->
-        response.body |> JSEX.decode!
-
-      true ->
-        response.body
-
+  defp fetch_body(response) do
+    if response.status_code < 200 or response.status_code > 200 do
+      raise "Error response was returned from server. status_code: #{response.status_code}, body: #{response.body}"
+    else
+      response.body
     end
   end
 
