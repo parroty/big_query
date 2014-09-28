@@ -1,9 +1,4 @@
 defmodule BigQuery do
-  # defdelegate projects,                       to: BigQuery.API.Base
-  # defdelegate datasets(project),              to: BigQuery.API.Base
-  # defdelegate jobs(project),                  to: BigQuery.API.Base
-  # defdelegate query(project, query),          to: BigQuery.API.Base
-  # defdelegate query(project, query, options), to: BigQuery.API.Base
   use OAuth2Ex.Client
 
   @project_id System.get_env("GOOGLE_BIG_QUERY_PROJECT_ID")
@@ -39,19 +34,19 @@ defmodule BigQuery do
   API: https://developers.google.com/bigquery/docs/reference/v2/#Projects
   """
   def projects do
-    url_for("projects") |> get |> fetch_body
+    get_request("projects")
   end
 
   def datasets do
-    url_for("projects/#{project_id}/datasets") |> get |> fetch_body
+    get_request("projects/#{project_id}/datasets")
   end
 
   def dataset(dataset_id) do
-    url_for("projects/#{project_id}/datasets/#{dataset_id}") |> get |> fetch_body
+    get_request("projects/#{project_id}/datasets/#{dataset_id}")
   end
 
   def tables(dataset_id) do
-    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> get |> fetch_body
+    get_request("projects/#{project_id}/datasets/#{dataset_id}/tables")
   end
 
   def jobs(stateFilter \\ "running") do
@@ -59,18 +54,26 @@ defmodule BigQuery do
     url_for("projects/#{project_id}/jobs") |> get(params) |> fetch_body
   end
 
-  def query do
+  def sample_query do
+    query("SELECT kind, name, population FROM [sample_dataset.sample_table] LIMIT 1000", "sample_dataset")
+  end
+
+  def query(query_string, dataset_id) do
     params = %{
       "kind": "bigquery#queryRequest",
-      "query": "SELECT kind, name, population FROM [sample_dataset.sample_table] LIMIT 1000",
+      "query": query_string,
       "defaultDataset": %{
-        "datasetId": "sample_dataset",
-        "projectId": "ktsquall"
+        "datasetId": dataset_id,
+        "projectId": project_id
       }
     }
 
     body = url_for("projects/#{project_id}/queries") |> post(params) |> fetch_body
     parse_query_result(body["rows"])
+  end
+
+  defp get_request(url) do
+    url_for(url) |> get |> fetch_body
   end
 
   defp fetch_body(response) do
