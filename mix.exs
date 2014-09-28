@@ -28,6 +28,7 @@ defmodule BigQuery.Mixfile do
     [
       #{:oauth2ex, "0.0.3"},
       {:oauth2ex, path: "../oauth2ex"},
+      {:oauth, github: "tim/erlang-oauth"},
       {:extwitter, "~> 0.1"}
     ]
   end

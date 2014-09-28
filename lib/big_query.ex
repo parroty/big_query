@@ -72,13 +72,41 @@ defmodule BigQuery do
     parse_query_result(body["rows"])
   end
 
+  def create_table(dataset_id, table_id, fields) do
+    params = %{
+      "kind": "bigquery#table",
+      "tableReference": %{
+        "projectId": project_id,
+        "datasetId": dataset_id,
+        "tableId": table_id
+      },
+      "schema": %{
+        "fields": fields
+      },
+    }
+
+    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> post(params) |> fetch_body
+  end
+
+  def delete_table(dataset_id, table_id) do
+    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}") |> delete |> fetch_body
+  end
+
+  def insert_all(dataset_id, table_id, rows) do
+    params = %{
+      "kind": "bigquery#tableDataInsertAllRequest",
+      "rows": rows
+    }
+    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}/insertAll") |> post(params) |> fetch_body
+  end
+
   defp get_request(url) do
     url_for(url) |> get |> fetch_body
   end
 
   defp fetch_body(response) do
-    if response.status_code < 200 or response.status_code > 200 do
-      raise "Error response was returned from server. status_code: #{response.status_code}, body: #{response.body}"
+    if response.status_code < 200 or response.status_code > 299 do
+      raise "Error response was returned from server. status_code: #{response.status_code}, body: #{inspect response.body}"
     else
       response.body
     end
