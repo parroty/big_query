@@ -26,8 +26,8 @@ defmodule BigQuery.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      #{:oauth2ex, "0.0.3"},
-      {:oauth2ex, path: "../oauth2ex"},
+      {:oauth2ex, "0.0.4"},
+      #{:oauth2ex, path: "../oauth2ex"},
       {:oauth, github: "tim/erlang-oauth"},
       {:extwitter, "~> 0.1"}
     ]

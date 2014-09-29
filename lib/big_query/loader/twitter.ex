@@ -2,6 +2,8 @@ defmodule BigQuery.Loader.Twitter do
   def dataset_id, do: "sample_dataset"
   def table_id, do: "twitter"
 
+  @chunk_size 50
+
   def start do
     ExTwitter.configure(
        consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
@@ -13,9 +15,10 @@ defmodule BigQuery.Loader.Twitter do
 
   def load_stream(keyword) do
     pid = spawn(fn ->
-      stream = ExTwitter.stream_filter(track: "keyword")
-      for tweet <- stream do
-        IO.puts tweet.text
+      stream = ExTwitter.stream_filter(track: keyword) |> Stream.chunk(@chunk_size)
+      for tweets <- stream do
+        IO.puts "----------inserting #{@chunk_size} records----------"
+        insert_tweets(Enum.reverse(tweets))
       end
     end)
   end
@@ -26,8 +29,13 @@ defmodule BigQuery.Loader.Twitter do
       ExTwitter.show(512695295843368960)
     ]
 
-    tweets |> Enum.map(&parse_tweet/1)
-           |> insert
+    insert_tweets(tweets)
+  end
+
+  defp insert_tweets(tweets) do
+    tweets
+      |> Enum.map(&parse_tweet/1)
+      |> insert
   end
 
   defp insert(tweets) do
