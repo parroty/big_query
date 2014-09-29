@@ -34,7 +34,20 @@ defmodule BigQuery do
   API: https://developers.google.com/bigquery/docs/reference/v2/#Projects
   """
   def projects do
-    get_request("projects")
+    body = get_request("projects")
+    body["projects"] |> Enum.map(&(merge_map(&1, %BigQuery.Records.Project{})))
+  end
+
+  defp merge_map(json, struct) do
+    keys = Map.keys(struct)
+    Enum.reduce(keys, struct, fn(key, acc) ->
+      atom_key = Atom.to_string(key)
+      if atom_key != "__struct__" and Map.has_key?(json, atom_key) do
+        Map.put(acc, key, Map.fetch!(json, atom_key))
+      else
+        acc
+      end
+    end)
   end
 
   def datasets do
@@ -127,16 +140,16 @@ defmodule BigQuery do
     end
   end
 
-  def parse_query_params(params) do
+  defp parse_query_params(params) do
     params |> Enum.map(fn({k,v}) -> "#{k}=#{v}" end)
            |> Enum.join("&")
   end
 
-  def parse_query_result(rows) do
+  defp parse_query_result(rows) do
     rows |> Enum.map(fn(data) -> parse_row(data["f"]) end)
   end
 
-  def parse_row(row) do
+  defp parse_row(row) do
     row |> Enum.map(fn(data) -> data["v"] end)
   end
 end

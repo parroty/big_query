@@ -6,6 +6,6 @@ defmodule BigQuery.Records do
     """
 
     defstruct kind: nil, id: nil, projectReference: nil,
-              friendlyName: nil, totalItems: nil, numericId: nil
+              friendlyName: nil, numericId: nil
   end
 end
