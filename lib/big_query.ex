@@ -1,155 +1,29 @@
 defmodule BigQuery do
-  use OAuth2Ex.Client
+  defdelegate projects, to: BigQuery.API.Projects
 
-  @project_id System.get_env("GOOGLE_BIG_QUERY_PROJECT_ID")
+  defdelegate query(query_string, dataset_id), to: BigQuery.API.Jobs
 
-  @doc """
-  Returns the target project_id for the BigQuery API.
-  """
-  def project_id, do: @project_id
+  defdelegate jobs,              to: BigQuery.API.Jobs
+  defdelegate jobs(stateFilter), to: BigQuery.API.Jobs
 
-  @doc """
-  Client configuration setting for specifying required parameters
-  for accessing OAuth 2.0 server.
-  """
-  def config do
-    OAuth2Ex.config(
-      id:            System.get_env("GOOGLE_API_CLIENT_ID"),
-      secret:        System.get_env("GOOGLE_API_CLIENT_SECRET"),
-      authorize_url: "https://accounts.google.com/o/oauth2/auth",
-      token_url:     "https://accounts.google.com/o/oauth2/token",
-      scope:         "https://www.googleapis.com/auth/bigquery",
-      callback_url:  "http://localhost:4000",
-      token_store:   %OAuth2Ex.FileStorage{
-                       file_path: System.user_home <> "/oauth2ex.google.token"}
-    )
-  end
+  defdelegate datasets,             to: BigQuery.API.Datasets
+  defdelegate datasets(dataset_id), to: BigQuery.API.Datasets
 
-  def url_for(path) do
-    "https://www.googleapis.com/bigquery/v2/#{path}"
-  end
+  defdelegate tables, to: BigQuery.API.Tables
+  defdelegate create_table(dataset_id, table_id, fields), to: BigQuery.API.Tables
+  defdelegate delete_table(dataset_id, table_id), to: BigQuery.API.Tables
 
-  @doc """
-  List the projects by calling Google BigQuery API - project list.
-  API: https://developers.google.com/bigquery/docs/reference/v2/#Projects
-  """
-  def projects do
-    body = get_request("projects")
-    body["projects"] |> Enum.map(&(merge_map(&1, %BigQuery.Records.Project{})))
-  end
+  defdelegate insert_all(dataset_id, table_id, rows), to: BigQuery.API.Tabledata
 
-  defp merge_map(json, struct) do
-    keys = Map.keys(struct)
-    Enum.reduce(keys, struct, fn(key, acc) ->
-      atom_key = Atom.to_string(key)
-      if atom_key != "__struct__" and Map.has_key?(json, atom_key) do
-        Map.put(acc, key, Map.fetch!(json, atom_key))
-      else
-        acc
-      end
-    end)
-  end
-
-  def datasets do
-    get_request("projects/#{project_id}/datasets")
-  end
-
-  def dataset(dataset_id) do
-    get_request("projects/#{project_id}/datasets/#{dataset_id}")
-  end
-
-  def tables(dataset_id) do
-    get_request("projects/#{project_id}/datasets/#{dataset_id}/tables")
-  end
-
-  def jobs(stateFilter \\ "running") do
-    params = [stateFilter: stateFilter]
-    url_for("projects/#{project_id}/jobs") |> get(params) |> fetch_body
-  end
+  defdelegate list_data(dataset_id, table_id),                           to: BigQuery.API.Tabledata
+  defdelegate list_data(dataset_id, table_id, start_index),              to: BigQuery.API.Tabledata
+  defdelegate list_data(dataset_id, table_id, start_index, max_results), to: BigQuery.API.Tabledata
 
   def sample_query do
     query("SELECT kind, name, population FROM [sample_dataset.sample_table] LIMIT 1000", "sample_dataset")
   end
 
-  def query(query_string, dataset_id) do
-    params = %{
-      "kind": "bigquery#queryRequest",
-      "query": query_string,
-      "defaultDataset": %{
-        "datasetId": dataset_id,
-        "projectId": project_id
-      }
-    }
-
-    body = url_for("projects/#{project_id}/queries") |> post(params) |> fetch_body
-    parse_query_result(body["rows"])
-  end
-
   def sample_list_data do
     list_data("sample_dataset", "twitter", 0, 20)
-  end
-
-  def list_data(dataset_id, table_id, start_index \\ 0, max_results \\ 100) do
-    params = %{
-      "maxResults": max_results,
-      "startIndex": start_index
-    }
-
-    body = url_for("projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}/data") |> get(params) |> fetch_body
-    parse_query_result(body["rows"])
-  end
-
-  def create_table(dataset_id, table_id, fields) do
-    params = %{
-      "kind": "bigquery#table",
-      "tableReference": %{
-        "projectId": project_id,
-        "datasetId": dataset_id,
-        "tableId": table_id
-      },
-      "schema": %{
-        "fields": fields
-      },
-    }
-
-    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables") |> post(params) |> fetch_body
-  end
-
-  def delete_table(dataset_id, table_id) do
-    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}") |> delete |> fetch_body
-  end
-
-  def insert_all(dataset_id, table_id, rows) do
-    params = %{
-      "kind": "bigquery#tableDataInsertAllRequest",
-      "rows": rows
-    }
-
-    url_for("projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}/insertAll") |> post(params) |> fetch_body
-  end
-
-  defp get_request(url) do
-    url_for(url) |> get |> fetch_body
-  end
-
-  defp fetch_body(response) do
-    if response.status_code < 200 or response.status_code > 299 do
-      raise "Error response was returned from server. status_code: #{response.status_code}, body: #{inspect response.body}"
-    else
-      response.body
-    end
-  end
-
-  defp parse_query_params(params) do
-    params |> Enum.map(fn({k,v}) -> "#{k}=#{v}" end)
-           |> Enum.join("&")
-  end
-
-  defp parse_query_result(rows) do
-    rows |> Enum.map(fn(data) -> parse_row(data["f"]) end)
-  end
-
-  defp parse_row(row) do
-    row |> Enum.map(fn(data) -> data["v"] end)
   end
 end

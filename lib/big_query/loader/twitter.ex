@@ -14,7 +14,7 @@ defmodule BigQuery.Loader.Twitter do
   end
 
   def load_stream(keyword) do
-    pid = spawn(fn ->
+    spawn(fn ->
       stream = ExTwitter.stream_filter(track: keyword) |> Stream.chunk(@chunk_size)
       for tweets <- stream do
         IO.puts "----------inserting #{@chunk_size} records----------"

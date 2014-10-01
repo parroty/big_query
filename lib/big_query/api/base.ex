@@ -1,64 +1,54 @@
 defmodule BigQuery.API.Base do
-  @basePath "https://www.googleapis.com/bigquery/v2/"
+  use OAuth2Ex.Client
 
-  # def get_request(url) do
-  #   headers = [{"Authorization", "OAuth #{get_token}"}]
-  #   body = HTTPoison.get(url, headers).body
-  #   case JSEX.decode!(body) do
-  #     %{"error" => error} ->
-  #       raise %BigQuery.Error{message: "Error occurred in the API call: #{inspect error}"}
-  #     json -> json
-  #   end
-  # end
-
-  # def post_request(url, request_body) do
-  #   headers = [{"Authorization", "OAuth #{get_token}"}, {"Content-Type", "application/json"}]
-  #   body = HTTPoison.post(url, request_body, headers).body
-  #   case JSEX.decode!(body) do
-  #     %{"error" => error} ->
-  #       raise %BigQuery.Error{message: "Error occurred in the API call: #{inspect error}"}
-  #     json -> json
-  #   end
-  # end
-
-  def get(url) do
-    body = OAuth2Ex.Request.get(BigQuery.OAuth2ExAdapter.token, url).body
-
-    case JSEX.decode!(body) do
-      %{"error" => error} ->
-        raise %BigQuery.Error{message: "Error occurred in the API call: #{inspect error}"}
-      json -> json
-    end
+  @doc """
+  Client configuration setting for specifying required parameters
+  for accessing OAuth 2.0 server.
+  """
+  def config do
+    OAuth2Ex.config(
+      id:            System.get_env("GOOGLE_API_CLIENT_ID"),
+      secret:        System.get_env("GOOGLE_API_CLIENT_SECRET"),
+      authorize_url: "https://accounts.google.com/o/oauth2/auth",
+      token_url:     "https://accounts.google.com/o/oauth2/token",
+      scope:         "https://www.googleapis.com/auth/bigquery",
+      callback_url:  "http://localhost:4000",
+      token_store:   %OAuth2Ex.FileStorage{
+                       file_path: System.user_home <> "/oauth2ex.google.token"}
+    )
   end
 
-  def projects do
-    url = url_for("projects")
-    json = get(url)
-    json["projects"]
-  end
-
-  # def datasets(project) do
-  #   url = url_for("projects/#{project}/datasets")
-  #   json = get_request(url)
-  #   json["datasets"]
-  # end
-
-  # def jobs(project) do
-  #   url = url_for("projects/#{project}/jobs")
-  #   json = get_request(url)
-  # end
-
-  # def sample_query do
-  #   "SELECT * FROM [sample_dataset.sample_table] LIMIT 1000"
-  # end
-
-  # def query(project, query, options \\ []) do
-  #   body = %{"kind" => "bigquery#queryget_Request", "query" => query} |> JSEX.encode!
-  #   url = url_for("projects/#{project}/queries")
-  #   post_request(url, body)
-  # end
+  @doc """
+  Returns the target project_id for the BigQuery API.
+  """
+  def project_id, do: System.get_env("GOOGLE_BIG_QUERY_PROJECT_ID")
 
   def url_for(path) do
-    @basePath <> path
+    "https://www.googleapis.com/bigquery/v2/#{path}"
+  end
+
+  def get_request(url) do
+    url_for(url) |> get |> fetch_body
+  end
+
+  def parse_query_params(params) do
+    params |> Enum.map(fn({k,v}) -> "#{k}=#{v}" end)
+           |> Enum.join("&")
+  end
+
+  def parse_query_result(rows) do
+    rows |> Enum.map(fn(data) -> parse_row(data["f"]) end)
+  end
+
+  def parse_row(row) do
+    row |> Enum.map(fn(data) -> data["v"] end)
+  end
+
+  def fetch_body(response) do
+    if response.status_code < 200 or response.status_code > 299 do
+      raise "Error response was returned from server. status_code: #{response.status_code}, body: #{inspect response.body}"
+    else
+      response.body
+    end
   end
 end
