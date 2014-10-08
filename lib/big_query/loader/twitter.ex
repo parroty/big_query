@@ -32,12 +32,6 @@ defmodule BigQuery.Loader.Twitter do
     end)
   end
 
-  def load_sample do
-    tweets = [ ExTwitter.show(512695470469021698),
-               ExTwitter.show(512695295843368960) ]
-    insert_tweets(tweets)
-  end
-
   def stop_stream(pid) do
     ExTwitter.stream_control(pid, :stop)
   end
@@ -53,16 +47,13 @@ defmodule BigQuery.Loader.Twitter do
   end
 
   def count_records do
-    query_string = "SELECT count(*) FROM [#{dataset_id}.#{table_id}] LIMIT 1000"
+    query_string = "SELECT count(*) FROM [#{dataset_id}.#{table_id}]"
     BigQuery.query(query_string, dataset_id)
   end
 
   def create_table do
-    fields = [
-      %{ "name": "id", "type": "STRING" },
-      %{ "name": "text", "type": "STRING" },
-    ]
-
+    fields = [ %{ "name": "id", "type": "STRING" },
+               %{ "name": "text", "type": "STRING" } ]
     BigQuery.create_table(dataset_id, table_id, fields)
   end
 
