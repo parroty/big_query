@@ -24,22 +24,28 @@ defmodule BigQuery.Loader.Twitter do
   end
 
   def load_sample do
-    tweets = [
-      ExTwitter.show(512695470469021698),
-      ExTwitter.show(512695295843368960)
-    ]
-
+    tweets = [ ExTwitter.show(512695470469021698),
+               ExTwitter.show(512695295843368960) ]
     insert_tweets(tweets)
+  end
+
+  def stop_stream(pid) do
+    ExTwitter.stream_control(pid, :stop)
   end
 
   defp insert_tweets(tweets) do
     tweets
       |> Enum.map(&parse_tweet/1)
-      |> insert
+      |> do_insert
   end
 
-  defp insert(tweets) do
+  defp do_insert(tweets) do
     BigQuery.insert_all(dataset_id, table_id, tweets)
+  end
+
+  def count_records do
+    query_string = "SELECT count(*) FROM [#{dataset_id}.#{table_id}] LIMIT 1000"
+    BigQuery.query(query_string, dataset_id)
   end
 
   def create_table do
