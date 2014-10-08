@@ -13,12 +13,21 @@ defmodule BigQuery.Loader.Twitter do
     )
   end
 
-  def load_stream(keyword) do
+  def load_stream(keyword, options \\ [verbose: true]) do
+    parent = self
     spawn(fn ->
-      stream = ExTwitter.stream_filter(track: keyword) |> Stream.chunk(@chunk_size)
-      for tweets <- stream do
-        IO.puts "----------inserting #{@chunk_size} records----------"
-        insert_tweets(Enum.reverse(tweets))
+      try do
+        stream = ExTwitter.stream_filter(track: keyword) |> Stream.chunk(@chunk_size)
+        for tweets <- stream do
+          insert_tweets(Enum.reverse(tweets))
+          message = "Inserted #{@chunk_size} records."
+          if options[:verbose], do: IO.puts message
+          send parent, {:ok, message}
+        end
+      rescue
+        error ->
+          send parent, {:error, error}
+          if options[:verbose], do: IO.inspect error
       end
     end)
   end

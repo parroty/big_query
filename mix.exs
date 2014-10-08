@@ -12,7 +12,7 @@ defmodule BigQuery.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [ applications: [:logger, :oauth2ex] ]
+    [ applications: [:logger, :oauth2ex, :extwitter] ]
   end
 
   # Dependencies can be hex.pm packages:
