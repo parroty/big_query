@@ -51,6 +51,10 @@ defmodule BigQuery.Loader.Twitter do
     BigQuery.query(query_string, dataset_id)
   end
 
+  def create_dataset do
+    BigQuery.create_dataset(dataset_id)
+  end
+
   def create_table do
     fields = [ %{ "name": "id", "type": "STRING" },
                %{ "name": "text", "type": "STRING" } ]

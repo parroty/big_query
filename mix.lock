@@ -8,7 +8,7 @@
   "idna": {:hex, :idna, "1.0.2"},
   "jsex": {:hex, :jsex, "2.0.0"},
   "jsx": {:hex, :jsx, "2.6.2"},
-  "oauth": {:git, "git://github.com/tim/erlang-oauth.git", "2ee206ea921722893200a0ad534c6b6130233325", []},
+  "oauth": {:git, "https://github.com/tim/erlang-oauth.git", "2ee206ea921722893200a0ad534c6b6130233325", []},
   "oauth2ex": {:hex, :oauth2ex, "0.0.8"},
   "plug": {:hex, :plug, "1.0.2"},
   "poison": {:hex, :poison, "1.5.0"},

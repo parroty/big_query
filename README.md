@@ -3,8 +3,8 @@
 
 Sample application for accessing Google BigQuery using Elixir.
 
-# Usage
-## Configure environment variable
+# Basic Usage
+## Configure environment variables
 - GOOGLE_API_CLIENT_ID
     - client_id which can be retrived from Google Developers Console.
 - GOOGLE_API_CLIENT_SECRET
@@ -50,3 +50,50 @@ OAuth2Ex.Token.save(token)
 > BigQuery.query("SELECT count(*) FROM [publicdata:samples.wikipedia]", "wikipedia")
 # -> [["313797035"]]
 ```
+
+# Twitter Loader Sample
+An example to load tabledata from twitter stream.
+
+## Configure environment variables
+- TWITTER_CONSUMER_KEY
+- TWITTER_CONSUMER_SECRET
+- TWITTER_ACCESS_TOKEN
+- TWITTER_ACCESS_SECRET
+
+## Create dataset.
+Create dataset named `sample_dataset` in BigQuery management console.
+
+## Create table and load data from twitter stream
+```elixir
+
+# Create table in the `sample_dataset`.
+BigQuery.Loader.Twitter.create_table
+# -> %{"etag" => ...
+  "schema" => %{"fields" => [%{"name" => "id", "type" => "STRING"},
+     %{"name" => "text", "type" => "STRING"}]},
+
+# Configure twitter client module.
+BigQuery.Loader.Twitter.start
+# -> :ok
+
+# Start loading stream which has keyword "apple".
+pid = BigQuery.Loader.Twitter.load_stream("apple")
+# -> #PID<0.191.0>
+# -> Inserted 50 records.
+# -> Inserted 50 records.
+# -> Inserted 50 records.
+# ...
+
+# Check record count.
+BigQuery.Loader.Twitter.count_records
+# -> [["150"]]
+
+# Stop loading stream.
+BigQuery.Loader.Twitter.stop_stream(pid)
+# -> :ok
+
+# Delete the created table.
+BigQuery.Loader.Twitter.delete_table
+# -> ""
+
+...
