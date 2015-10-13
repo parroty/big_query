@@ -5,6 +5,8 @@ Sample application for accessing Google BigQuery using Elixir.
 
 # Basic Usage
 ## Configure environment variables
+The folowing variables are used in `BigQuery.API.Base` module.
+
 - GOOGLE_API_CLIENT_ID
     - client_id which can be retrived from Google Developers Console.
 - GOOGLE_API_CLIENT_SECRET
@@ -56,6 +58,8 @@ OAuth2Ex.Token.save(token)
 An example to load tabledata from twitter stream.
 
 ## Configure environment variables
+The folowing variables are used in `BigQuery.Loader.Twitter` module.
+
 - TWITTER_CONSUMER_KEY
 - TWITTER_CONSUMER_SECRET
 - TWITTER_ACCESS_TOKEN
