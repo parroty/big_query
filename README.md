@@ -18,6 +18,7 @@ Sample application for accessing Google BigQuery using Elixir.
 > cd big_query
 > mix deps.get
 > iex -S mix
+```
 
 ## Fetch Token
 By default, token is stored in `~/oauth2ex.google.token`.
