@@ -12,7 +12,7 @@ defmodule BigQuery.API.Base do
       authorize_url: "https://accounts.google.com/o/oauth2/auth",
       token_url:     "https://accounts.google.com/o/oauth2/token",
       scope:         "https://www.googleapis.com/auth/bigquery",
-      callback_url:  "http://localhost:4000",
+      callback_url:  "urn:ietf:wg:oauth:2.0:oob",
       token_store:   %OAuth2Ex.FileStorage{
                        file_path: System.user_home <> "/oauth2ex.google.token"}
     )
