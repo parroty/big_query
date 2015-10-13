@@ -18,12 +18,4 @@ defmodule BigQuery do
   defdelegate list_data(dataset_id, table_id),                           to: BigQuery.API.Tabledata
   defdelegate list_data(dataset_id, table_id, start_index),              to: BigQuery.API.Tabledata
   defdelegate list_data(dataset_id, table_id, start_index, max_results), to: BigQuery.API.Tabledata
-
-  def sample_query do
-    query("SELECT kind, name, population FROM [sample_dataset.sample_table] LIMIT 1000", "sample_dataset")
-  end
-
-  def sample_list_data do
-    list_data("sample_dataset", "twitter", 0, 20)
-  end
 end
