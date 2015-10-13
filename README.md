@@ -61,7 +61,7 @@ An example to load tabledata from twitter stream.
 - TWITTER_ACCESS_TOKEN
 - TWITTER_ACCESS_SECRET
 
-## Create dataset.
+## Create dataset (pre-configuration)
 Create dataset named `sample_dataset` in BigQuery management console.
 
 ## Create table and load data from twitter stream
@@ -70,8 +70,8 @@ Create dataset named `sample_dataset` in BigQuery management console.
 # Create table in the `sample_dataset`.
 BigQuery.Loader.Twitter.create_table
 # -> %{"etag" => ...
-  "schema" => %{"fields" => [%{"name" => "id", "type" => "STRING"},
-     %{"name" => "text", "type" => "STRING"}]},
+#  "schema" => %{"fields" => [%{"name" => "id", "type" => "STRING"},
+#     %{"name" => "text", "type" => "STRING"}]},
 
 # Configure twitter client module.
 BigQuery.Loader.Twitter.start
