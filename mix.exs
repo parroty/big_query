@@ -4,7 +4,7 @@ defmodule BigQuery.Mixfile do
   def project do
     [app: :big_query,
      version: "0.0.1",
-     elixir: "~> 1.0.0",
+     elixir: "~> 1.0",
      deps: deps]
   end
 
@@ -12,7 +12,7 @@ defmodule BigQuery.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [ applications: [:logger, :oauth2ex, :extwitter] ]
+    [ applications: [:logger, :extwitter, :oauth2ex] ]
   end
 
   # Dependencies can be hex.pm packages:
@@ -26,10 +26,8 @@ defmodule BigQuery.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:oauth2ex, "0.0.4"},
-      #{:oauth2ex, path: "../oauth2ex"},
-      {:oauth, github: "tim/erlang-oauth"},
-      {:extwitter, "~> 0.1"}
+      {:oauth2ex, "0.0.8"},
+      {:extwitter, "~> 0.5"}
     ]
   end
 end
